@@ -1,0 +1,3 @@
+KAFKA_SERVER = 'localhost:9093'
+KAFKA_TOPIC = 'kafkaz'
+KAFKA_SERVERS = [KAFKA_SERVER]

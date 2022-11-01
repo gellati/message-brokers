@@ -1,0 +1,40 @@
+version: '3.9'
+services:
+  zookeeper:
+    build:
+      context: ./zookeeper
+      dockerfile: Dockerfile
+      args:
+        ZOOKEEPER_VERSION: 3.8.0
+    container_name: zookeeper_container
+    ports:
+      - '2181:2181'
+      - '2888:2888'
+      - '3888:3888'
+      - '8080:8080'
+    image: zookeeper_image
+  kafka:
+    build:
+      context: ./kafka
+      dockerfile: Dockerfile
+      args:
+        KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+        KAFKA_VERSION: 3.3.1
+        SCALA_VERSION: 2.13
+        KAFKA_BROKER_ID: 1
+        KAFKA_LISTENERS: LISTENER_LOCAL://:9093, LISTENER_CLUSTER://:9092
+        KAFKA_ADVERTISED_LISTENERS: LISTENER_LOCAL://localhost:9093, LISTENER_CLUSTER://kafka:9092
+        KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: LISTENER_LOCAL:PLAINTEXT, LISTENER_CLUSTER:PLAINTEXT
+        KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER_CLUSTER
+    container_name: kafka_container
+    depends_on:
+      - zookeeper
+    ports:
+      - '9092:9092'
+      - '9093:9093'
+    image: kafka_image
+
+networks:
+  default:
+    external:
+      name: kafka-network
